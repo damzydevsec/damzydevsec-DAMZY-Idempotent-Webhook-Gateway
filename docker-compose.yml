@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  gateway-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: damzy-webhook-gateway:v1.0.0
+    container_name: damzy_gateway
+    ports:
+      - "8080:8080"
+    environment:
+      # Rely on Compose for internal networking routing
+      - PORT=8080
+      - REDIS_ADDR=redis-cache:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-} # Optional, defaults to empty
+      - PAYMENT_SECRET_KEY=${PAYMENT_SECRET_KEY}
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - gateway_net
+
+  redis-cache:
+    image: redis:7.2-alpine
+    container_name: damzy_redis
+    # Run Redis with aggressive save configurations for local persistence and reduced verbosity
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - gateway_net
+
+volumes:
+  redis_data:
+
+networks:
+  gateway_net:
+    driver: bridge

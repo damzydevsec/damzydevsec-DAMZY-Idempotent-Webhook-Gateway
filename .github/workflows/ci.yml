@@ -1,0 +1,69 @@
+# Author: Damzyfortress
+# Enterprise DevSecOps CI/CD Pipeline for DAMZY-Webhook-Gateway
+name: Fortress Defense Pipeline
+
+# Trigger the pipeline on every push or pull request to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# Principle of Least Privilege: The pipeline only needs read access to the code
+permissions:
+  contents: read
+
+jobs:
+  security-and-lint:
+    name: SAST & Code Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x' # Locking in your elite toolchain version
+
+      - name: Enforce Coding Standards (golangci-lint)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+      - name: Execute Security Scan (gosec)
+        uses: securego/gosec@master
+        with:
+          # Fails the build if vulnerabilities like hardcoded secrets are found
+          args: ./... 
+
+
+  test:
+    name: Concurrency & Idempotency Testing
+    runs-on: ubuntu-latest
+    needs: security-and-lint # Fail-Fast: Only test if security passes
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+
+      - name: Run Test Suite with Race Detector
+        # The -race flag pushes your goroutines to the limit to find hidden concurrency crashes
+        run: go test -v -race ./...
+
+
+  build-container:
+    name: Docker Infrastructure Audit
+    runs-on: ubuntu-latest
+    needs: test # Fail-Fast: Only build the container if the tests pass
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Verify Distroless Build
+        # This ensures your multi-stage Dockerfile compiles cleanly in a fresh environment
+        run: docker build -t damzy-webhook-gateway:ci-verify .

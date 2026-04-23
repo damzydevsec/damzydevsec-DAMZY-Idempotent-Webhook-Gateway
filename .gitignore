@@ -1,0 +1,9 @@
+# Binaries
+/main
+*.exe
+
+# Environment variables
+.env
+
+# Go workspace
+/vendor/

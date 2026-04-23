@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DAMZY-Idempotent-Webhook-Gateway: A military-grade, highly concurrent, zero-data-loss webhook processor.">
+    <meta name="author" content="Damzyfortress">
+    <title>DAMZY Webhook Gateway | Enterprise Infrastructure</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            900: '#0a0a0f',
+                            800: '#12121a',
+                            accent: '#00ffcc',
+                            danger: '#ff3366'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0f; color: #e2e8f0; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glow-text { text-shadow: 0 0 20px rgba(0, 255, 204, 0.4); }
+        .glow-box { box-shadow: 0 0 30px rgba(0, 255, 204, 0.1); }
+        .scanline {
+            width: 100%; height: 100px; z-index: 9999; position: absolute; pointer-events: none;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,255,204,0.1) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1; animation: scanline 8s linear infinite;
+        }
+        @keyframes scanline { 0% { top: -100px; } 100% { top: 100%; } }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyber-accent selection:text-black relative overflow-x-hidden">
+    <div class="scanline"></div>
+
+    <nav class="border-b border-gray-800 bg-cyber-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-cyber-accent flex items-center justify-center text-black font-bold">D</div>
+                    <span class="font-bold text-xl tracking-tight text-white">DAMZY<span class="text-gray-500">GATEWAY</span></span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://github.com/damzydevsec/DAMZY-Webhook-Gateway" target="_blank" class="text-gray-300 hover:text-cyber-accent transition-colors px-3 py-2 text-sm font-medium">GitHub Repository</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            
+            <div>
+                <div class="inline-flex items-center px-3 py-1 rounded-full border border-cyber-accent/30 bg-cyber-accent/10 text-cyber-accent text-xs font-mono mb-6">
+                    <span class="w-2 h-2 rounded-full bg-cyber-accent mr-2 animate-pulse"></span>
+                    SYSTEM ONLINE — V1.0.0
+                </div>
+                <h1 class="text-5xl lg:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+                    Military-Grade <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-accent to-blue-500 glow-text">
+                        Idempotency.
+                    </span>
+                </h1>
+                <p class="text-lg text-gray-400 mb-8 max-w-xl leading-relaxed">
+                    An enterprise Go microservice engineered to catch payment webhooks, verify cryptographic signatures, and prevent double-crediting with zero-data-loss Redis queues. 
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://github.com/damzydevsec/DAMZY-Webhook-Gateway" target="_blank" class="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-black bg-cyber-accent hover:bg-teal-400 transition-all shadow-[0_0_20px_rgba(0,255,204,0.3)]">
+                        Access Source Code
+                    </a>
+                    <a href="#architecture" class="inline-flex justify-center items-center px-6 py-3 border border-gray-700 text-base font-medium rounded-md text-white bg-cyber-800 hover:bg-gray-800 transition-all">
+                        View Architecture
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-cyber-accent to-blue-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                <div class="relative bg-[#0d1117] border border-gray-700 rounded-xl shadow-2xl overflow-hidden glow-box">
+                    <div class="flex items-center px-4 py-3 bg-[#161b22] border-b border-gray-700">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="ml-4 text-xs font-mono text-gray-400">damzyfortress@gateway: ~</div>
+                    </div>
+                    <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto whitespace-pre">
+<span class="text-gray-500"># Initialize the distroless vault</span>
+<span class="text-green-400">$</span> docker-compose up --build -d
+
+<span class="text-blue-400">damzy_redis</span>   | Ready to accept connections
+<span class="text-cyan-400">damzy_gateway</span> | {"level":"INFO","msg":"Hardened Redis connection established","pool_size":200}
+<span class="text-cyan-400">damzy_gateway</span> | {"level":"INFO","msg":"Gateway active and listening","port":"8080"}
+
+<span class="text-gray-500 mt-4 block"># Simulating external Paystack/Stripe webhook attack</span>
+<span class="text-cyan-400">damzy_gateway</span> | {"level":"INFO","msg":"New webhook successfully verified and queued","txID":"tx_live_enterprise_999"}
+<span class="text-purple-400">worker_pool</span>   | {"level":"INFO","msg":"Worker successfully processed and acknowledged webhook."}
+
+<span class="text-gray-500 mt-4 block"># Simulating rapid duplicate firing (Double-Credit Attempt)</span>
+<span class="text-yellow-400">damzy_gateway</span> | {"level":"INFO","msg":"Idempotency lock triggered: Duplicate webhook dropped","txID":"tx_live_enterprise_999"}
+<span class="text-green-400">✓ Attack neutralized. State preserved.</span>
+<span class="animate-pulse">_</span></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <section id="architecture" class="border-t border-gray-800 bg-cyber-800 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold text-white tracking-tight">Enterprise Infrastructure Defenses</h2>
+                <p class="mt-4 max-w-2xl text-gray-400 mx-auto">Built to withstand hostile networks, DoS attacks, and network partitions.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-cyber-900 border border-gray-700 p-6 rounded-lg hover:border-cyber-accent transition-colors">
+                    <div class="w-10 h-10 rounded bg-gray-800 flex items-center justify-center mb-4 text-cyber-accent">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Zero-Trust Perimeter</h3>
+                    <p class="text-gray-400 text-sm">HMAC-SHA512 verification using constant-time comparison to prevent timing attacks. Drops unverified payloads instantly.</p>
+                </div>
+
+                <div class="bg-cyber-900 border border-gray-700 p-6 rounded-lg hover:border-blue-500 transition-colors">
+                    <div class="w-10 h-10 rounded bg-gray-800 flex items-center justify-center mb-4 text-blue-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Atomic Idempotency</h3>
+                    <p class="text-gray-400 text-sm">Redis Lua scripts execute Check-then-Set locks with 100% atomicity, completely eliminating race conditions.</p>
+                </div>
+
+                <div class="bg-cyber-900 border border-gray-700 p-6 rounded-lg hover:border-purple-500 transition-colors">
+                    <div class="w-10 h-10 rounded bg-gray-800 flex items-center justify-center mb-4 text-purple-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Distroless Vault</h3>
+                    <p class="text-gray-400 text-sm">Compiled Go binaries running in a scratch container. No root user, no shell, no OS packages. Zero attack surface.</p>
+                </div>
+
+                <div class="bg-cyber-900 border border-gray-700 p-6 rounded-lg hover:border-green-500 transition-colors">
+                    <div class="w-10 h-10 rounded bg-gray-800 flex items-center justify-center mb-4 text-green-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Reliable Queues</h3>
+                    <p class="text-gray-400 text-sm">Utilizes the BRPopLPush pattern for background workers. If a pod crashes mid-execution, zero data is lost.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-gray-800 bg-cyber-900 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-500 text-sm">
+                Architected & Engineered by <span class="text-white font-bold">Damzyfortress</span>. <br>
+                Built for High-Performance Enterprise Ecosystems.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
